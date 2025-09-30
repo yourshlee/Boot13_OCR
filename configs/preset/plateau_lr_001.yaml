@@ -1,0 +1,32 @@
+# @package _global_
+
+defaults:
+  - base
+  - /preset/datasets/db_improved
+  - /preset/models/encoder/timm_backbone
+  - /preset/models/decoder/unet
+  - /preset/models/head/db_head
+  - /preset/models/loss/db_loss
+  - /preset/lightning_modules/base
+  - _self_
+
+exp_name: "plateau_lr_001"
+
+models:
+  optimizer:
+    _target_: torch.optim.AdamW
+    lr: 0.001
+    weight_decay: 1e-4
+    betas: [0.9, 0.999]
+
+  # ReduceLROnPlateau 스케줄러
+  scheduler:
+    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+    mode: 'min'  # loss 감소 모니터링
+    factor: 0.5  # 학습률 절반으로 감소
+    patience: 3  # 3 에포크 동안 개선 없으면 감소
+    threshold: 1e-4
+    min_lr: 1e-6
+
+trainer:
+  max_epochs: 20

@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - /preset/models/decoder/unet
+  - /preset/models/encoder/resnet34_backbone
+  - /preset/models/head/db_head
+  - /preset/models/loss/db_loss
+  - _self_
+
+models:
+  # ResNet34 백본용 최적화 설정
+  optimizer:
+    _target_: torch.optim.AdamW
+    lr: 0.001  # ResNet34는 더 깊으므로 기본 학습률 유지
+    weight_decay: 1e-4
+    betas: [0.9, 0.999]
+
+  # 학습률 스케줄러
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: 25  # 25 에포크 훈련
+    eta_min: 1e-6

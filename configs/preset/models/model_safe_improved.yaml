@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - /preset/models/decoder/unet
+  - /preset/models/encoder/timm_backbone
+  - /preset/models/head/db_head
+  - /preset/models/loss/db_loss
+  - _self_
+
+models:
+  # 기본 백본 유지하되 최적화만 개선
+  optimizer:
+    _target_: torch.optim.AdamW  # Adam -> AdamW
+    lr: 0.001
+    weight_decay: 1e-4  # L2 정규화
+    betas: [0.9, 0.999]
+
+  # 학습률 스케줄러 추가
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: 30  # 에포크 수와 맞춤
+    eta_min: 1e-6

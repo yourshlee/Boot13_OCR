@@ -1,0 +1,40 @@
+# @package _global_
+
+defaults:
+  - base
+  - /preset/datasets/db_improved
+  - /preset/models/model_safe_improved
+  - /preset/lightning_modules/base
+  - _self_
+
+exp_name: "large_batch_24"
+
+# 큰 배치 크기 설정
+datasets:
+  transforms:
+    train:
+      image_size: [640, 640]  # 메모리 절약을 위해 해상도 감소
+    val:
+      image_size: [640, 640]
+    test:
+      image_size: [640, 640]
+    predict:
+      image_size: [640, 640]
+
+  train:
+    batch_size: 24  # 16 -> 24로 증가
+  val:
+    batch_size: 24
+  test:
+    batch_size: 24
+
+# 큰 배치를 위한 학습률 조정
+models:
+  optimizer:
+    _target_: torch.optim.AdamW
+    lr: 0.0015  # sqrt(24/16) * 0.001 ≈ 0.0012, 약간 높게 설정
+    weight_decay: 1e-4
+    betas: [0.9, 0.999]
+
+trainer:
+  max_epochs: 20

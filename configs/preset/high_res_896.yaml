@@ -1,0 +1,39 @@
+# @package _global_
+
+defaults:
+  - base
+  - /preset/datasets/db_improved
+  - /preset/models/model_safe_improved
+  - /preset/lightning_modules/base
+  - _self_
+
+exp_name: "high_res_896"
+
+# 고해상도 설정
+datasets:
+  transforms:
+    train:
+      image_size: [640, 640]  # GPU 메모리 절약을 위해 크게 감소
+      # 나머지 증강 설정은 db_improved에서 상속
+    val:
+      image_size: [640, 640]
+    test:
+      image_size: [640, 640]
+    predict:
+      image_size: [640, 640]
+
+  # GPU 메모리 부족으로 인한 최대 감소
+  train:
+    batch_size: 2  # GPU 메모리 부족으로 최소로 감소
+  val:
+    batch_size: 2
+  test:
+    batch_size: 2
+
+trainer:
+  max_epochs: 20
+  precision: 32  # Mixed precision 비활성화 (BCE와 호환성 문제)
+
+  # autocast 완전 비활성화
+  enable_progress_bar: true
+  accelerator: "gpu"

@@ -1,0 +1,15 @@
+# @package _global_
+
+defaults:
+  - base
+  - /preset/datasets/db_improved
+  - /preset/models/model_improved
+  - /preset/lightning_modules/base
+  - _self_
+
+# 더 긴 훈련
+trainer:
+  max_epochs: 30  # 10 -> 30으로 증가
+
+# 실험 이름
+experiment_name: ocr_training_improved

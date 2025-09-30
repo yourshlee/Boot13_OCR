@@ -1,0 +1,62 @@
+# @package _global_
+
+defaults:
+  - base
+  - /preset/datasets/db_improved
+  - /preset/models/model_safe_improved
+  - /preset/lightning_modules/base
+  - _self_
+
+exp_name: "strong_regularization"
+
+models:
+  # 강한 정규화 설정
+  optimizer:
+    _target_: torch.optim.AdamW
+    lr: 0.001
+    weight_decay: 2e-4  # 1e-4 -> 2e-4로 증가
+    betas: [0.9, 0.999]
+
+  # 드롭아웃 추가는 모델 아키텍처 수정이 필요하므로 일단 제외
+  # 대신 더 강한 데이터 증강으로 정규화 효과
+
+# 강한 데이터 증강
+datasets:
+  train:
+    batch_size: 8  # 메모리 절약을 위해 배치 크기 감소
+  val:
+    batch_size: 8
+  test:
+    batch_size: 8
+
+  transforms:
+    train:
+      image_size: [640, 640]  # 메모리 절약을 위해 해상도도 감소
+      augmentations:
+        - _target_: albumentations.ColorJitter
+          brightness: 0.3  # 0.2 -> 0.3
+          contrast: 0.3    # 0.2 -> 0.3
+          saturation: 0.3  # 0.2 -> 0.3
+          hue: 0.15        # 0.1 -> 0.15
+          p: 0.5           # 확률 증가
+
+        - _target_: albumentations.GaussianBlur
+          blur_limit: [3, 9]  # [3, 7] -> [3, 9]
+          p: 0.4              # 0.3 -> 0.4
+
+        - _target_: albumentations.GaussNoise
+          var_limit: [10, 70]  # [10, 50] -> [10, 70]
+          p: 0.4               # 0.3 -> 0.4
+
+        # 추가 증강
+        - _target_: albumentations.RandomRotate90
+          p: 0.3
+
+        - _target_: albumentations.ShiftScaleRotate
+          shift_limit: 0.1
+          scale_limit: 0.1
+          rotate_limit: 15
+          p: 0.3
+
+trainer:
+  max_epochs: 20

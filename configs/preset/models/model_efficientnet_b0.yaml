@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - /preset/models/decoder/unet_efficientnet
+  - /preset/models/encoder/efficientnet_b0_backbone
+  - /preset/models/head/db_head
+  - /preset/models/loss/db_loss
+  - _self_
+
+models:
+  # EfficientNet-B0 백본용 최적화 설정
+  optimizer:
+    _target_: torch.optim.AdamW
+    lr: 0.0005  # EfficientNet은 더 작은 학습률 선호
+    weight_decay: 1e-4
+    betas: [0.9, 0.999]
+
+  # 학습률 스케줄러 (웜업 포함)
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: 25  # 25 에포크 훈련
+    eta_min: 1e-6

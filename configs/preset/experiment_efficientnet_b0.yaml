@@ -1,0 +1,26 @@
+# @package _global_
+
+defaults:
+  - base
+  - /preset/datasets/db_improved
+  - /preset/models/model_efficientnet_b0
+  - /preset/lightning_modules/base
+  - _self_
+
+# 실험 이름
+exp_name: "efficientnet_b0_experiment"
+
+# 훈련 설정
+trainer:
+  max_epochs: 25
+  precision: 32  # BCE loss compatibility
+
+# 배치 크기 (EfficientNet-B0는 효율적이므로 더 큰 배치 가능)
+datasets:
+  train:
+    batch_size: 4  # GPU 메모리 부족으로 최소로 감소
+  val:
+    batch_size: 4
+  test:
+    batch_size: 4
+  image_size: [384, 384]  # 해상도 최대한 감소
